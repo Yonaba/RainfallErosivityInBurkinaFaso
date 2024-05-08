@@ -5,8 +5,10 @@ library(zoo)
 library(stringr)
 library(lubridate)
 
+ftype <- "bc"
 ref.product <- "imerg"
-folder <- "0_hourly_bc"
+folder <- ifelse(ftype == "raw","0_hourly","0_hourly_bc")
+
 products <- list.files(path="processing/0_hourly")
 products <- str_match(products,"^([a-z0-9]*)_pr_bf_hourly.csv")[,2]
 coef <- read.csv("processing/R_factor/coef_i30_i60_bf.csv",header = T, sep = ",", dec = ".")
@@ -72,7 +74,8 @@ CalcErosiveEvents <- function(Pcp, StartDate=as.POSIXct("1900-01-01", tz="UTC"),
 for (product in products) {
   #product <- "imerg"
   
-  df <- read.csv(paste0("processing/",folder,"/",product,"_pr_bf_hourly.csv"),header = T, sep = ",", dec = ".")
+  ffolder <- ifelse(product == ref.product,"0_hourly",folder)
+  df <- read.csv(paste0("processing/",ffolder,"/",product,"_pr_bf_hourly.csv"),header = T, sep = ",", dec = ".")
   # df$datetime <- as.character(df$datetime)
   # df$datetime <- ifelse(nchar(df$datetime) == 10, paste(df$datetime, "00:00:00"), df$datetime)
   # df$datetime <- as.POSIXct(as.character(df$datetime),format="%Y-%m-%d %H:%M:%S",tz="UTC")
@@ -135,7 +138,7 @@ for (product in products) {
     # }
   }
   
-  write.csv(alld, file = paste0("processing/R_factor/",product,"_Rfactor_bf_bc.csv"), row.names = F)  
+  write.csv(alld, file = paste0("processing/R_factor/",product,"_Rfactor_bf_",ftype,".csv"), row.names = F)  
   
   # numcols <- c("year", "duration","total","i60","R")
   # alld[,numcols] <- sapply(alld[,numcols], as.numeric)

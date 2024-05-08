@@ -11,7 +11,7 @@ library(ggpubr)
 pnames <- c("CMORPH", "ERA5", "IMERG", "MERRA-2", "PDIR-Now", "PERSIANN", "PERSIANN-CCS")
 names(pnames) <- c("cmorph", "era5", "imerg","merra2", "pdirnow", "persiann", "persiannccs")
 
-cols <- c("#E6AB02","#E31A1C","#FB8072","#8DA0CB","#A6CEE3","#8DD3C7","#FCCDE5")
+cols <- c("#E6AB02","#FB8072","#E31A1C", "#8DA0CB","#A6CEE3","#8DD3C7","#FCCDE5")
 
 plot_int_dur <- function(type, plot_title_int, plot_title_dur, label_x) {
   #folder <- "0_hourly"

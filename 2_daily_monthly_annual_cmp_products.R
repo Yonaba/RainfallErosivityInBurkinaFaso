@@ -41,7 +41,7 @@ df.day <- data.frame(matrix(nrow=0, ncol=length(headers)-1))
 colnames(df.day) <- c("source","value","station")
 
 for (source in names(lfiles.mon)) {
-  #source <- "cmorph"
+  #source <- "imerg"
   
   dday <- lfiles.day[[source]]
   dmon <- lfiles.mon[[source]]
@@ -89,6 +89,7 @@ for (product in products) {
   tmp <- data.frame(obs=dobs, mod = dprod, source = rep(product,length(dprod)))
   df.day0 <- rbind(df.day0, tmp)
 }
+
 df.day0 <- df.day0[df.day0$obs>0,]
 
 cols <- c("black", "#E6AB02","#E31A1C","#FB8072","#8DA0CB","#A6CEE3","#8DD3C7","#FCCDE5")
@@ -97,19 +98,31 @@ names(pnames) <- c("cmorph", "era5", "imerg","merra2", "pdirnow", "persiann", "p
 
 df.day0$source <- as.character(pnames[df.day0$source])
 
+format_pval <- function(pval){
+  pval <- scales::pvalue(pval, accuracy= 0.001, add_p = TRUE)
+  gsub(pattern = "(=|<)", replacement = " \\1 ", x = pval)
+}
+
 pl.day <- ggscatter(df.day0, x ="obs", y = "mod", facet.by = "source", add = "reg.line", 
                     conf.int = T, conf.int.level = 0.9,
                     add.params = list(color = "blue",size=0.5, fill = "lightgray"),
-                    shape = 1,size = 0.5, cor.method = "spearman",
-                    cor.coef = T,
-                    cor.coeff.args = list(method = "spearman", label.y = 200, label.x = 150, label.sep = "\n"),
+                    shape = 1,size = 0.5, cor.method = "pearson",
+                    #cor.coef = T,
+                    cor.coeff.args = list(method = "spearman", label.y = 200, label.x = 50, label.sep = "\n"),
                     xlab = "Synoptic gauge observations [mm]", 
                     ylab = "Rainfall product data [mm]\n") + 
+  stat_cor(method = "pearson", aes(label = paste(..rr.label.., format_pval(..p..), sep="~`,`~")), 
+           digits=2, r.accuracy = 0.001, p.accuracy = 0.001,
+           label.y = 250, label.x = 50) +
   xlim(0,270) + ylim(0,270) + theme_bw() +
   theme(axis.text=element_text(colour="black"))
 
-ggsave("graphs/cmp_day.png", plot = pl.day, 
-       width = 20, height = 20, units = "in", dpi = 400, scale = 0.4)
+pl.day2 <- facet(pl.day, facet.by = "source", nrow = 2)
+
+pl.day2
+
+ggsave("graphs/cmp_day2.png", plot = pl.day2, 
+       width = 28, height = 17, units = "in", dpi = 400, scale = 0.4)
 
 pnames <- c("OBS",pnames)
 #names(pnames) <- c("obs","cmorph", "era5", "imerg","merra2", "pdirnow", "persiann", "persiannccs")

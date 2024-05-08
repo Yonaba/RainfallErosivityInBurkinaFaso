@@ -5,7 +5,7 @@ library(ncdf4)
 library(stringr)
 library(lubridate)
 
-product <- "pdirnow"
+product <- "persiann"
 
 stations <- read.csv("input/bf_stations.csv",header = T, sep = ",", dec = ".")
 rownames(stations) <- stations$Name
@@ -67,6 +67,7 @@ tseq <- ifelse(nchar(tseq) == 10, paste(tseq, "00:00:00"), tseq)
 tseq <- data.frame(datetime = tseq)
 df <- merge(tseq, df, by = "datetime", all = T)
 df[is.na(df)] <- 0
+df[,2:ncol(df)][df[,2:ncol(df)] > 253] <- 0
 
 write.csv(df, file = paste0("processing/0_hourly/",product,"_pr_bf_hourly.csv"), row.names = F)
 print("finished")

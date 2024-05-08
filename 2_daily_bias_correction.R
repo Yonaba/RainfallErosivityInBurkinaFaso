@@ -7,8 +7,8 @@ library(MBC)
 library(stringr)
 library(lubridate)
 
-THRESHOLD <- 0.1
-TAU <- 0.75
+THRESHOLD <- 0.1/24
+TAU <- 0.85
 SUBSAMPLE <- 30
 
 ref.product <- "imerg"

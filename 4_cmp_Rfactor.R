@@ -69,32 +69,32 @@ write.csv(mdf, file = paste0("tables/eval_perf_rps.csv"), row.names = F)
 df.R.raw <- stack(df.R.raw)
 df.R.bc <- stack(df.R.bc)
 
-cols <- c("lightgrey", "#E6AB02","#E31A1C","#FB8072","#8DA0CB","#A6CEE3","#8DD3C7","#FCCDE5")
-pnames <- c("GloREDa","CMORPH", "ERA5", "IMERG", "MERRA-2", "PDIR-Now", "PERSIANN", "PERSIANN-CCS")
+cols <- c("lightgrey","#E6AB02","#FB8072","#E31A1C", "#8DA0CB","#A6CEE3","#8DD3C7","#FCCDE5")
+pnames <- c("GloREDa","CMORPH", "ERA5", "IMERG","MERRA-2", "PDIR-Now", "PERSIANN", "PERSIANN-CCS")
 
 rawplot <- ggboxplot(df.R.raw, x = "ind", y="values", fill="ind", palette = cols) +
   #stat_compare_means(label.x = 1, label.y = 5000) +
-  ylim(0,6000) +
-  geom_segment(aes(x=8, y=5000, xend=8, yend=6000), arrow = arrow(length=unit(.5, 'cm')), 
-               color = tail(cols,1), lwd = 2) +
+  #ylim(0,8000) +
+  #geom_segment(aes(x=8, y=7000, xend=8, yend=8000), arrow = arrow(length=unit(.5, 'cm')),color = tail(cols,1), lwd = 2) +
   xlab("") + ylab(expression("R-factor [MJ mm "*~ha^-1~h^-1~yr^-1*"]")) +
-  scale_x_discrete(labels=pnames) +
+  scale_x_discrete(labels=pnames) + scale_y_continuous(trans="sqrt") +
   theme_bw() +  
   theme(legend.position = "none",
         axis.text=element_text(colour="black", size = 10)) +
-  labs(title="(a) Annual R-factor (raw rainfall products)")
-
+  labs(title="(a) Annual R-factor (raw)")
+#rawplot
 bcplot <- ggboxplot(df.R.bc, x = "ind", y="values", fill="ind", palette = cols) +
   #stat_compare_means(label.x = 1, label.y = 5000) +
-  ylim(0,6000) +
+  #ylim(0,8000) +
   xlab("") + ylab(expression("R-factor [MJ mm "*~ha^-1~h^-1~yr^-1*"]")) +
-  scale_x_discrete(labels=pnames) +  
+  scale_x_discrete(labels=pnames) + scale_y_continuous(trans="sqrt") +
   theme_bw() +
   theme(legend.position = "none",
         axis.text=element_text(colour="black", size = 10)) +
-  labs(title="(b) Annual R-factor (bias-corrected rainfall products)")
-
+  labs(title="(b) Annual R-factor (bias corrected)")
+#bcplot
 grob <- ggarrange(rawplot, bcplot, ncol=1)
+grob
 
 ggsave("graphs/ann_Rfactor.png", plot = grob, 
        width = 23, height = 18, units = "in", dpi = 350, scale = 0.4)
